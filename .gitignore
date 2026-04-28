@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+.Python
+
+# Credentials & secrets — never commit
+.env
+.env.*
+*.env
+~/.sap-abap-cli/
+
+# Editor & OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+Thumbs.db
+
+# Test & coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
