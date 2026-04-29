@@ -1,5 +1,7 @@
 # sap-abap-cli
 
+[English](README.md) | [中文](README.zh-CN.md)
+
 通过 [ADT（ABAP 开发工具）REST API](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools) 从 SAP 系统读取 ABAP 源代码和元数据的命令行工具，同时也是一个 AI 智能体技能包（Agent Skill）。
 
 支持程序、类、函数模块、接口、Include、DDIC 对象、包、事务码及对象搜索——可在终端直接使用，也可集成到 AI 智能体工作流中。

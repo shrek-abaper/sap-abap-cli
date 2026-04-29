@@ -1,5 +1,7 @@
 # sap-abap-cli
 
+[English](README.md) | [中文](README.zh-CN.md)
+
 A command-line tool and AI agent skill for reading ABAP source code and metadata
 from SAP systems via the [ADT (ABAP Development Tools) REST API](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools).
 
