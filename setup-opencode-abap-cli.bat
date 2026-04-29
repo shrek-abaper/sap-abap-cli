@@ -167,8 +167,8 @@ if ($opencodeCmd) {
 # STEP 4 — 克隆仓库并建立技能目录联接（Junction）
 #
 #   仓库完整克隆到：  %USERPROFILE%\.agents\sap-abap-cli\
-#   技能入口联接到：  %USERPROFILE%\.agents\skills\sap-abap-cli\
-#              ↑ 指向仓库内 skills\sap-abap-cli\ 子目录
+#   技能入口联接到：  %USERPROFILE%\.agents\skills\sap-adt-cli\
+#              ↑ 指向仓库内 skills\sap-adt-cli\ 子目录
 #
 #   好处：
 #     - 仓库与技能路径职责分离，结构清晰
@@ -180,8 +180,8 @@ Write-Step "克隆 sap-abap-cli 仓库并配置技能目录联接"
 $agentsDir = Join-Path $env:USERPROFILE ".agents"
 $repoDir   = Join-Path $agentsDir "sap-abap-cli"           # 完整仓库存放位置
 $skillsDir = Join-Path $agentsDir "skills"                  # 技能根目录
-$skillLink = Join-Path $skillsDir "sap-abap-cli"            # 技能入口（Junction）
-$skillSrc  = Join-Path $repoDir   "skills\sap-abap-cli"     # 仓库内技能子目录
+$skillLink = Join-Path $skillsDir "sap-adt-cli"            # 技能入口（Junction）
+$skillSrc  = Join-Path $repoDir   "skills\sap-adt-cli"     # 仓库内技能子目录
 
 # 确保目录存在
 foreach ($dir in @($agentsDir, $skillsDir)) {

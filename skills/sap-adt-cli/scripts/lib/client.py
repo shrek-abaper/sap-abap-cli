@@ -45,11 +45,14 @@ def make_adt_request(
     timeout: int = 30,
     data=None,
     params: Optional[dict] = None,
+    extra_headers: Optional[dict] = None,
 ) -> requests.Response:
     global _csrf_token, _session_cookies
 
     config = get_config()
     headers = _auth_headers(config)
+    if extra_headers:
+        headers.update(extra_headers)
 
     if not config.verify_ssl:
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

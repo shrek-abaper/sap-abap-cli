@@ -1,13 +1,14 @@
-# sap-abap-cli
+# sap-adt-cli
 
 [English](README.md) | [中文](README.zh-CN.md)
 
-A command-line tool and AI agent skill for reading ABAP source code and metadata
-from SAP systems via the [ADT (ABAP Development Tools) REST API](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools).
+A command-line tool and AI agent skill for reading **and writing** ABAP source code, metadata,
+and transport requests from SAP systems via the [ADT (ABAP Development Tools) REST API](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools).
 
-Supports programs, classes, function modules, interfaces, includes, DDIC objects,
-packages, transactions, and object search — all from the terminal or from within
-an AI agent workflow.
+Supports programs, classes, function modules, interfaces, includes, CDS views, DDIC objects,
+packages, transactions, SQL queries, where-used analysis, syntax checks, and transport management —
+all from the terminal or from within an AI agent workflow. Write and transport operations require
+explicit capability flags and per-operation confirmation.
 
 ---
 
@@ -24,7 +25,7 @@ Dependencies (`click`, `requests`, `urllib3`) are installed automatically on fir
 ## Windows Quick Setup — AI Agent Integration
 
 > **Example: [opencode](https://opencode.ai)** — a free, open-source AI agent — is used here as the reference setup.  
-> `sap-abap-cli` is packaged as a standard Agent Skill (`SKILL.md`) and works with any agent framework that supports custom tools/skills.
+> `sap-adt-cli` is packaged as a standard Agent Skill (`SKILL.md`) and works with any agent framework that supports custom tools/skills.
 
 `setup-opencode-abap-cli.bat` is a Windows one-click installer that wires up opencode and this skill end-to-end.
 
@@ -35,7 +36,7 @@ Dependencies (`click`, `requests`, `urllib3`) are installed automatically on fir
 | 1 | Checks Node.js ≥ v18, Python 3, and Git are installed (prints guided download links if any are missing) |
 | 2 | Adds Node.js bin and npm global package paths to the user-level `PATH` |
 | 3 | Installs `opencode-ai` globally via `npm install -g opencode-ai` |
-| 4 | Clones this repository to `%USERPROFILE%\.agents\skills\sap-abap-cli` (the opencode skills directory) |
+| 4 | Clones this repository to `%USERPROFILE%\.agents\skills\sap-adt-cli` (the opencode skills directory) |
 | 5 | Installs Python dependencies: `click`, `requests`, `urllib3` |
 
 ### Prerequisites
@@ -81,7 +82,7 @@ missing authorization checks, and hardcoded credentials
 Scan the package ZMYPAYMENT and list all objects with potential security issues
 ```
 
-opencode automatically calls `sap-abap-cli` to fetch ABAP source code from your SAP system via ADT,
+opencode automatically calls `sap-adt-cli` to fetch ABAP source code from your SAP system via ADT,
 then passes it to the AI model for analysis — no copy-paste required.
 
 ### SAP credentials setup (first run)
@@ -96,11 +97,11 @@ SAP Client        — 3-digit client number (e.g. 100)
 Skip SSL check?   — yes for self-signed / internal certs
 ```
 
-Credentials are saved to `~\.sap-abap-cli\config.json` and reused in all subsequent sessions.
+Credentials are saved to `~\.sap-adt-cli\config.json` and reused in all subsequent sessions.
 
 ### Compatible AI agents
 
-opencode is one example. `sap-abap-cli` implements the standard Agent Skill interface (`SKILL.md`)
+opencode is one example. `sap-adt-cli` implements the standard Agent Skill interface (`SKILL.md`)
 and integrates with any agent framework that supports custom tools or skills:
 
 | Agent | Notes |
@@ -120,19 +121,19 @@ and integrates with any agent framework that supports custom tools or skills:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-org/sap-abap-cli
-cd sap-abap-cli
+git clone https://github.com/your-org/sap-adt-cli
+cd sap-adt-cli
 
 # 2. Configure credentials (interactive wizard — password is not echoed)
-python3 skills/sap-abap-cli/scripts/sap_abap_cli.py configure
+python3 skills/sap-adt-cli/scripts/sap_adt_cli.py configure
 
 # 3. Verify the connection
-python3 skills/sap-abap-cli/scripts/sap_abap_cli.py status
+python3 skills/sap-adt-cli/scripts/sap_adt_cli.py status
 
 # 4. Start reading ABAP objects
-python3 skills/sap-abap-cli/scripts/sap_abap_cli.py get-program SAPMV45A
-python3 skills/sap-abap-cli/scripts/sap_abap_cli.py get-class ZCL_MY_CLASS
-python3 skills/sap-abap-cli/scripts/sap_abap_cli.py get-function BAPI_SALESORDER_CREATEFROMDAT2 --group BAPI_SD_SALESORDER
+python3 skills/sap-adt-cli/scripts/sap_adt_cli.py get-program SAPMV45A
+python3 skills/sap-adt-cli/scripts/sap_adt_cli.py get-class ZCL_MY_CLASS
+python3 skills/sap-adt-cli/scripts/sap_adt_cli.py get-function BAPI_SALESORDER_CREATEFROMDAT2 --group BAPI_SD_SALESORDER
 ```
 
 ---
@@ -142,10 +143,10 @@ python3 skills/sap-abap-cli/scripts/sap_abap_cli.py get-function BAPI_SALESORDER
 ### Interactive wizard (recommended)
 
 ```bash
-python3 skills/sap-abap-cli/scripts/sap_abap_cli.py configure
+python3 skills/sap-adt-cli/scripts/sap_adt_cli.py configure
 ```
 
-Credentials are saved to `~/.sap-abap-cli/config.json` with `0600` permissions.
+Credentials are saved to `~/.sap-adt-cli/config.json` with `0600` permissions.
 
 > **Security note:** The config file stores credentials in plain text.
 > Do not commit it to version control and restrict access to the file accordingly.
@@ -164,11 +165,40 @@ export SAP_LANGUAGE=EN              # optional, default: EN
 export SAP_VERIFY_SSL=0             # optional: set 0 for self-signed certificates
 ```
 
+### Capability flags (default: disabled)
+
+Two optional flags unlock write and transport capabilities.
+**Enable only on development systems.**
+
+```bash
+# Enable interactively
+python3 skills/sap-adt-cli/scripts/sap_adt_cli.py configure
+# → answer 'y' to the write/transport prompts
+
+# Enable non-interactively
+SAP_PASSWORD="secret" python3 skills/sap-adt-cli/scripts/sap_adt_cli.py configure \
+  --url "https://sap-dev.example.com:44300" \
+  --username "DEVELOPER" \
+  --client "400" \
+  --allow-write \
+  --no-allow-transport
+```
+
+| Flag | Config field | Default | Commands unlocked |
+|------|-------------|---------|-------------------|
+| `--allow-write` | `allow_write` | false | `write-source`, `activate` |
+| `--allow-transport` | `allow_transport` | false | `create-transport`, `release-transport` |
+
+**Confirmation policy**: even when flags are enabled, every write/create/release
+operation shows a change preview and requires explicit `[y/N]` confirmation.
+The confirmation applies to the current operation only — it is discarded immediately
+after use and must be repeated for each subsequent operation.
+
 ### Non-interactive flags (agent / automation workflows)
 
 ```bash
 # Pass password via environment variable to avoid shell history exposure
-SAP_PASSWORD="secret" python3 skills/sap-abap-cli/scripts/sap_abap_cli.py configure \
+SAP_PASSWORD="secret" python3 skills/sap-adt-cli/scripts/sap_adt_cli.py configure \
   --url      "https://my-sap.example.com:8000" \
   --username "MYUSER" \
   --client   "100"
@@ -191,10 +221,19 @@ SAP_PASSWORD="secret" python3 skills/sap-abap-cli/scripts/sap_abap_cli.py config
 | `get-table <NAME>` | DDIC table field definitions (XML) |
 | `get-structure <NAME>` | DDIC structure definition (XML) |
 | `get-type-info <NAME>` | Domain or data element info (XML) |
+| `get-type-group <NAME>` | ABAP type group (TYPE POOL) source |
+| `get-cds-view <NAME>` | CDS View DDL source code |
 | `get-package <NAME>` | Package object list (JSON) |
 | `get-transaction <NAME>` | Transaction properties / package (XML) |
-| `get-table-contents <NAME> [--max-rows N]` | Table row data *(requires custom service)* |
 | `search-object <QUERY> [--max-results N]` | Object name search — `*` wildcard supported |
+| `syntax-check <TYPE> <NAME>` | Syntax check — read-only, no confirmation |
+| `where-used <TYPE> <NAME> [--max-results N]` | Where-used list (JSON) |
+| `run-sql "<SQL>" [--max-rows N]` | Open SQL SELECT → JSON *(DML statements blocked)* |
+| `write-source <TYPE> <NAME> --file <PATH>` | Write source code *(allow_write + confirm each time)* |
+| `activate <TYPE> <NAME>` | Activate ABAP object *(allow_write + confirm each time)* |
+| `list-transports [--user U] [--status D\|R]` | List transport requests (JSON, read-only) |
+| `create-transport --description "<DESC>"` | Create transport *(allow_transport + confirm each time)* |
+| `release-transport <TRKORR> [--yes]` | Release transport — irreversible *(allow_transport + confirm each time)* |
 
 Run any command with `--help` for full details.
 
@@ -203,7 +242,7 @@ Run any command with `--help` for full details.
 ## Examples
 
 ```bash
-CLI="skills/sap-abap-cli/scripts/sap_abap_cli.py"
+CLI="skills/sap-adt-cli/scripts/sap_adt_cli.py"
 
 # Source code
 python3 $CLI get-program SAPMV45A
@@ -216,14 +255,27 @@ python3 $CLI get-interface ZIF_MY_INTERFACE
 python3 $CLI get-table VBAK
 python3 $CLI get-structure VBAKKOM
 python3 $CLI get-type-info MATNR
+python3 $CLI get-type-group ICON
 
 # Discovery
 python3 $CLI search-object "ZCL_ORDER*" --max-results 20
 python3 $CLI get-package ZMYPACKAGE
 python3 $CLI get-transaction VA01
+python3 $CLI get-cds-view ZI_INVENTORY_POSITION
 
-# Table data (requires custom SAP service — see Prerequisites)
-python3 $CLI get-table-contents T001 --max-rows 50
+# Analysis (read-only)
+python3 $CLI syntax-check class ZCL_MY_CLASS
+python3 $CLI where-used class ZCL_PAYMENT_PROCESSOR
+python3 $CLI run-sql "SELECT * FROM t001 UP TO 5 ROWS"
+
+# Write & activate (allow_write + confirm each time)
+python3 $CLI write-source class ZCL_MY_CLASS --file /tmp/zcl.abap
+python3 $CLI activate class ZCL_MY_CLASS
+
+# Transport management
+python3 $CLI list-transports --status D                              # read-only
+python3 $CLI create-transport --description "My feature"            # allow_transport + confirm
+python3 $CLI release-transport DEVK900001                           # allow_transport + confirm
 ```
 
 ---
@@ -243,24 +295,15 @@ Assign the role `SAP_ADT_BASE` to the SAP user, or manually grant:
 - `S_ADT_RES` — ADT resource access
 - `S_RFC` — Remote function call access for ADT function groups
 
-### 3. (Optional) Custom table content service
-
-`get-table-contents` requires the custom REST service
-`/z_sap_abap_cli/z_tablecontent` deployed in the target SAP system.
-For implementation guidance, refer to this community guide:
-[How to use RFC_READ_TABLE from JavaScript via WebService](https://community.sap.com/t5/application-development-and-automation-blog-posts/how-to-use-rfc-read-table-from-javascript-via-webservice/ba-p/13172358)
-
-All other commands work without it.
-
 ---
 
 ## Output Formats
 
 | Commands | Output |
 |----------|--------|
-| Source code commands | Plain text ABAP source |
+| Source code commands (`get-program`, `get-class`, `get-function`, `get-include`, `get-interface`, `get-cds-view`, `get-type-group`) | Plain text ABAP source |
 | `get-table`, `get-structure`, `get-type-info`, `get-transaction`, `search-object` | Raw ADT XML |
-| `get-package` | JSON array |
+| `get-package`, `where-used`, `list-transports`, `run-sql` | JSON array |
 | `status` | Plain text key-value pairs |
 
 All output is written to **stdout**. Errors are written to **stderr** with a non-zero exit code.
@@ -282,11 +325,41 @@ All output is written to **stdout**. Errors are written to **stderr** with a non
 
 ## Security Considerations
 
-- Credentials are stored **in plain text** in `~/.sap-abap-cli/config.json` (permissions `0600`).
+- Credentials are stored **in plain text** in `~/.sap-adt-cli/config.json` (permissions `0600`).
   This is consistent with common CLI tools (AWS CLI, Azure CLI). Restrict file access accordingly.
 - Avoid passing passwords via `--password` — they appear in shell history and `ps` output.
   Prefer the interactive `configure` wizard or the `SAP_PASSWORD` environment variable.
+- Write and transport commands require explicit capability flags (`allow_write`, `allow_transport`)
+  plus per-operation `[y/N]` confirmation. Never enable on production systems.
 - For shared or CI environments, use short-lived credentials and rotate them regularly.
+
+---
+
+## Changelog
+
+### v1.1.0 — Capability expansion & rename
+
+- **10 new commands**: `syntax-check`, `get-cds-view`, `get-type-group`, `write-source`, `activate`, `where-used`, `run-sql`, `list-transports`, `create-transport`, `release-transport`
+- **Dual-guard write protection**: capability flags (`allow_write` / `allow_transport`) must be enabled in config, AND each destructive operation requires explicit `[y/N]` confirmation at runtime
+- **DML-safe SQL**: `run-sql` accepts only `SELECT` statements; `INSERT`, `UPDATE`, `DELETE`, `MERGE` are blocked at the CLI layer regardless of system permissions
+- **Renamed** from `sap-abap-cli` to `sap-adt-cli` to better reflect the ADT API scope
+- **Config directory** migrated from `~/.sap-abap-cli/` to `~/.sap-adt-cli/`; automatic migration on first run if old config exists
+
+### v1.0.0 — Initial release
+
+- Read-only ADT skill: programs, classes, function modules, function groups, interfaces, includes, DDIC tables/structures/types, packages, transactions, object search
+
+---
+
+## Development Paradigm
+
+This project was built using an AI-native, spec-driven development loop:
+
+1. **Specification** — Requirements and implementation details were worked out through a conversation with **Claude Desktop**, which produced structured Markdown prompt files encoding the full spec (change scope, acceptance criteria, anti-patterns).
+2. **Execution** — The prompt files were handed directly to an agentic coding stack — **[opencode](https://opencode.ai) + [Oh My OpenAgent](https://github.com/oh-my-opencode/oh-my-openagent) + GitHub Copilot Pro** — which planned, implemented, tested, and verified the changes autonomously.
+3. **Review** — The human role was limited to deciding *what* to build, reviewing final outputs, and iterating on the spec when something fell short.
+
+The result is a workflow where natural-language intent flows from Claude Desktop into precise executable specifications, and those specifications are consumed end-to-end by an agent stack — closing the loop from idea to working code with minimal manual intervention.
 
 ---
 

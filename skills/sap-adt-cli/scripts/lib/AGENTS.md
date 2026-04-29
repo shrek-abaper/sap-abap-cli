@@ -29,14 +29,14 @@ class AdtResult:
 - `client.py`: CSRF token + session are module-level globals (not thread-safe, single-process only)
 - CSRF token fetched lazily on first POST/PUT; auto-retried on 403+CSRF response
 - URL encoding: always use `_enc(name)` = `quote(name, safe="")` for SAP object names
-- Config resolution: env vars (`SAP_URL`, `SAP_USERNAME`, `SAP_PASSWORD`, `SAP_CLIENT`) win over `~/.sap-abap-cli/config.json`
+- Config resolution: env vars (`SAP_URL`, `SAP_USERNAME`, `SAP_PASSWORD`, `SAP_CLIENT`) win over `~/.sap-adt-cli/config.json`
 
 ## ADDING A NEW SAP OBJECT TYPE
 1. Find ADT endpoint in `../references/adt_api.md`
 2. Add handler in `handlers.py`: `def get_foo(name) -> AdtResult: try: return _ok(make_adt_request(...)) except Exception as e: return _err(e)`
-3. Add `@cli.command` in `../sap_abap_cli.py` calling `_output(handlers.get_foo(name))`
+3. Add `@cli.command` in `../sap_adt_cli.py` calling `_output(handlers.get_foo(name))`
 
 ## ANTI-PATTERNS
 - Never call `sys.exit()` or `print()` from this lib — use `AdtResult(is_error=True)` only
-- Never import from `sap_abap_cli.py` (circular) — lib is leaf layer
+- Never import from `sap_adt_cli.py` (circular) — lib is leaf layer
 - `__init__.py` is empty — import modules directly (`from lib.config import ...`)

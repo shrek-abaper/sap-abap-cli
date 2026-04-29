@@ -9,7 +9,7 @@ Python CLI + AI agent skill for reading SAP ABAP source code and DDIC metadata f
 ## STRUCTURE
 ```
 sap-abap-cli/
-├── skills/sap-abap-cli/    # Entire implementation lives here (see skills/sap-abap-cli/AGENTS.md)
+├── skills/sap-adt-cli/    # Entire implementation lives here (see skills/sap-adt-cli/AGENTS.md)
 │   ├── SKILL.md            # Agent framework integration metadata
 │   ├── scripts/            # Python CLI + library
 │   └── references/         # ADT API reference docs
@@ -21,52 +21,51 @@ sap-abap-cli/
 ## WHERE TO LOOK
 | Task | Location |
 |------|----------|
-| Run the CLI | `skills/sap-abap-cli/scripts/sap_abap_cli.py` |
-| Add a new SAP object type command | `scripts/lib/handlers.py` + `scripts/sap_abap_cli.py` |
+| Run the CLI | `skills/sap-adt-cli/scripts/sap_adt_cli.py` |
+| Add a new SAP object type command | `scripts/lib/handlers.py` + `scripts/sap_adt_cli.py` |
 | Change credential storage/loading | `scripts/lib/config.py` |
 | Change HTTP/CSRF behavior | `scripts/lib/client.py` |
-| Agent skill description/trigger | `skills/sap-abap-cli/SKILL.md` |
-| ADT endpoint reference | `skills/sap-abap-cli/references/adt_api.md` |
+| Agent skill description/trigger | `skills/sap-adt-cli/SKILL.md` |
+| ADT endpoint reference | `skills/sap-adt-cli/references/adt_api.md` |
 | Windows installer logic | `setup-opencode-abap-cli.bat` |
 
 ## COMMANDS
 ```bash
 # Configure credentials (interactive)
-python3 skills/sap-abap-cli/scripts/sap_abap_cli.py configure
+python3 skills/sap-adt-cli/scripts/sap_adt_cli.py configure
 
 # Or non-interactively (agent workflows)
-SAP_PASSWORD="secret" python3 skills/sap-abap-cli/scripts/sap_abap_cli.py configure \
+SAP_PASSWORD="secret" python3 skills/sap-adt-cli/scripts/sap_adt_cli.py configure \
   --url "https://my-sap.example.com:8000" --username MYUSER --client 100
 
 # Check connection
-python3 skills/sap-abap-cli/scripts/sap_abap_cli.py status
+python3 skills/sap-adt-cli/scripts/sap_adt_cli.py status
 
 # Fetch ABAP objects
-python3 skills/sap-abap-cli/scripts/sap_abap_cli.py get-class ZCL_MY_CLASS
-python3 skills/sap-abap-cli/scripts/sap_abap_cli.py get-function BAPI_SALESORDER_CREATEFROMDAT2 --group BAPI_SD_SALESORDER
-python3 skills/sap-abap-cli/scripts/sap_abap_cli.py search-object "ZCL_ORDER*"
+python3 skills/sap-adt-cli/scripts/sap_adt_cli.py get-class ZCL_MY_CLASS
+python3 skills/sap-adt-cli/scripts/sap_adt_cli.py get-function BAPI_SALESORDER_CREATEFROMDAT2 --group BAPI_SD_SALESORDER
+python3 skills/sap-adt-cli/scripts/sap_adt_cli.py search-object "ZCL_ORDER*"
 
 # Install Python deps manually
-pip install -r skills/sap-abap-cli/scripts/requirements.txt
+pip install -r skills/sap-adt-cli/scripts/requirements.txt
 ```
 
 ## CONVENTIONS
 - **SAP object names ALWAYS UPPERCASE** — `VBAK` not `vbak`, `ZCL_MY_CLASS` not `zcl_my_class`
 - All stdout = data output; all errors → stderr + `sys.exit(1)`
-- Credentials stored in `~/.sap-abap-cli/config.json` (0600 perms, plain text)
+- Credentials stored in `~/.sap-adt-cli/config.json` (0600 perms, plain text)
 - Env vars (`SAP_URL`, `SAP_USERNAME`, `SAP_PASSWORD`, `SAP_CLIENT`) override config file
 - Pass passwords via env var (`SAP_PASSWORD=...`), NOT `--password` flag (shell history risk)
 - Dependencies (click, requests, urllib3) auto-install on first run via `_ensure_deps()`
 
 ## ANTI-PATTERNS
 - Never pass `--password` on command line — exposes in shell history and `ps`
-- Never commit `~/.sap-abap-cli/config.json` — gitignore already excludes it
+- Never commit `~/.sap-adt-cli/config.json` — gitignore already excludes it
 - Do NOT import `lib.*` from outside `scripts/` — `sys.path.insert` in entry point makes it work only from that dir
 
 ## NOTES
 - No tests, no CI, no pyproject.toml — intentional minimal footprint for agent skill use
-- NOT a pip-installable package; invoke directly with `python3 path/to/sap_abap_cli.py`
-- `get-table-contents` requires a custom SAP REST service; returns HTTP 404 if not deployed
+- NOT a pip-installable package; invoke directly with `python3 path/to/sap_adt_cli.py`
 - `get-type-info` tries domain first, falls back to data element silently
 - HTTP session is module-level (not thread-safe — single invocation only)
-- AI agent installation path: `~/.agents/skills/sap-abap-cli/` (symlink or Windows junction)
+- AI agent installation path: `~/.agents/skills/sap-adt-cli/` (symlink or Windows junction)
