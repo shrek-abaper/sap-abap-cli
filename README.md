@@ -367,7 +367,7 @@ This project was built using an AI-native, spec-driven development loop:
 
 The result is a workflow where natural-language intent flows from Claude Desktop into precise executable specifications, and those specifications are consumed end-to-end by an agent stack — closing the loop from idea to working code with minimal manual intervention.
 
-> The author is a SAP business consultant with 10+ years of industry experience — not a professional software developer. This project is a direct demonstration that domain expertise, paired with an AI-native toolchain, is sufficient to design and ship production-quality developer tools without a traditional programming background.
+> The author is a SAP business consultant with 10+ years of industry experience. This project grew from a practical day-to-day need and became a personal exploration of what an AI-native development workflow makes possible — hopefully useful to other domain experts who want to build their own tools.
 
 ---
 
