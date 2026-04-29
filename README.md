@@ -246,7 +246,10 @@ Assign the role `SAP_ADT_BASE` to the SAP user, or manually grant:
 ### 3. (Optional) Custom table content service
 
 `get-table-contents` requires the custom REST service
-`/z_mcp_abap_adt/z_tablecontent` deployed in the target SAP system.
+`/z_sap_abap_cli/z_tablecontent` deployed in the target SAP system.
+For implementation guidance, refer to this community guide:
+[How to use RFC_READ_TABLE from JavaScript via WebService](https://community.sap.com/t5/application-development-and-automation-blog-posts/how-to-use-rfc-read-table-from-javascript-via-webservice/ba-p/13172358)
+
 All other commands work without it.
 
 ---

@@ -174,7 +174,7 @@ python3 "$SAP_CLI" get-table-contents T001 --max-rows 50
 - **XML output**: `get-table`, `get-structure`, `get-type-info`, `get-transaction`, `search-object` return raw XML from ADT — parse it or read it as-is
 - **JSON output**: `get-package` is the only command that returns a parsed JSON array
 - **`get-type-info` fallback**: tries domain first; if not found, falls back to data element
-- **`get-table-contents`**: requires a custom REST service `/z_mcp_abap_adt/z_tablecontent` deployed in the SAP system — if it returns HTTP 404, the service is not installed; use `get-table` for structure instead
+- **`get-table-contents`**: requires a custom REST service `/z_sap_abap_cli/z_tablecontent` deployed in the SAP system — if it returns HTTP 404, the service is not installed; use `get-table` for structure instead
 - **SSL**: for internal SAP systems with self-signed certs, configure with SSL disabled (`SAP_VERIFY_SSL=0` or answer "n" in wizard)
 - **Session reuse**: the HTTP session is reused within a single script invocation; each `python3 "$SAP_CLI" ...` call starts fresh
 - **Credentials precedence**: env vars > `~/.sap-abap-cli/config.json`
@@ -243,5 +243,5 @@ python3 "$SAP_CLI" get-transaction VA01
 
 - ADT services active: transaction `SICF` → path `/sap/bc/adt` → Activate
 - User authorization: role `SAP_ADT_BASE` or objects `S_ADT_RES`, `S_RFC`
-- `get-table-contents` additionally needs custom service `/z_mcp_abap_adt/z_tablecontent`
-  (see [original project](https://github.com/mario-andreschak/mcp-abap-adt) for setup)
+- `get-table-contents` additionally needs custom service `/z_sap_abap_cli/z_tablecontent`
+  deployed and active in the SAP system (transaction SICF)

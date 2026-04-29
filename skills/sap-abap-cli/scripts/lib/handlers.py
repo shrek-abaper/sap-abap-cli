@@ -84,7 +84,7 @@ def get_table(table_name: str) -> AdtResult:
 
 def get_table_contents(table_name: str, max_rows: int = 100) -> AdtResult:
     try:
-        url = f"{_base()}/z_mcp_abap_adt/z_tablecontent/{_enc(table_name)}?maxRows={max_rows}"
+        url = f"{_base()}/z_sap_abap_cli/z_tablecontent/{_enc(table_name)}?maxRows={max_rows}"
         return _ok(make_adt_request(url))
     except Exception as e:
         return _err(e)

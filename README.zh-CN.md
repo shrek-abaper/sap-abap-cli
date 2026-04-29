@@ -240,7 +240,9 @@ python3 $CLI get-table-contents T001 --max-rows 50
 
 ### 3. （可选）自定义表内容服务
 
-`get-table-contents` 命令需要在目标 SAP 系统中部署自定义 REST 服务 `/z_mcp_abap_adt/z_tablecontent`。  
+`get-table-contents` 命令需要在目标 SAP 系统中部署自定义 REST 服务 `/z_sap_abap_cli/z_tablecontent`。  
+实现参考：[How to use RFC_READ_TABLE from JavaScript via WebService](https://community.sap.com/t5/application-development-and-automation-blog-posts/how-to-use-rfc-read-table-from-javascript-via-webservice/ba-p/13172358)
+
 其他所有命令无需此服务即可正常使用。
 
 ---

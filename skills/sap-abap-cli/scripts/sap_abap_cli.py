@@ -186,7 +186,7 @@ def get_table_contents(table_name, max_rows):
 
     TABLE_NAME is the dictionary table name, e.g. T001.
 
-    Requires the custom REST service /z_mcp_abap_adt/z_tablecontent to be
+    Requires the custom REST service /z_sap_abap_cli/z_tablecontent to be
     deployed and active in the target SAP system (transaction SICF).
     Returns HTTP 404 if the service is not installed — use get-table for
     structure information instead.
