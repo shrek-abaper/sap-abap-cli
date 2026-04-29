@@ -21,8 +21,15 @@ python3 "$SAP_CLI" <command> [args]
 If you already know the absolute path to the skill directory (e.g. from the skill loader), use it directly:
 
 ```bash
-SAP_CLI="/home/user/.agents/skills/sap-abap-cli/scripts/sap_abap_cli.py"
+# Linux / macOS — skill installed via clone + symlink
+SAP_CLI="$HOME/.agents/skills/sap-abap-cli/scripts/sap_abap_cli.py"
 python3 "$SAP_CLI" <command> [args]
+```
+
+```powershell
+# Windows — skill installed via setup-opencode-abap-cli.bat (Junction)
+$SAP_CLI = "$env:USERPROFILE\.agents\skills\sap-abap-cli\scripts\sap_abap_cli.py"
+python "$SAP_CLI" <command> [args]
 ```
 
 First run auto-installs `click`, `requests`, and `urllib3`. All source code output goes to stdout. Errors go to stderr with exit code 1.

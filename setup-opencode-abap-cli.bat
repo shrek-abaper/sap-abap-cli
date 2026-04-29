@@ -164,26 +164,59 @@ if ($opencodeCmd) {
 }
 
 # =============================================================================
-# STEP 4 — 克隆 sap-abap-cli
+# STEP 4 — 克隆仓库并建立技能目录联接（Junction）
+#
+#   仓库完整克隆到：  %USERPROFILE%\.agents\sap-abap-cli\
+#   技能入口联接到：  %USERPROFILE%\.agents\skills\sap-abap-cli\
+#              ↑ 指向仓库内 skills\sap-abap-cli\ 子目录
+#
+#   好处：
+#     - 仓库与技能路径职责分离，结构清晰
+#     - 更新时只需 git pull（在 .agents\sap-abap-cli\ 执行），
+#       技能链接自动反映最新代码，无需重新配置
 # =============================================================================
-Write-Step "克隆 sap-abap-cli 到用户目录（.agents/skills）"
+Write-Step "克隆 sap-abap-cli 仓库并配置技能目录联接"
 
-$skillsDir = Join-Path $env:USERPROFILE ".agents\skills"
-$cliDir    = Join-Path $skillsDir "sap-abap-cli"
+$agentsDir = Join-Path $env:USERPROFILE ".agents"
+$repoDir   = Join-Path $agentsDir "sap-abap-cli"           # 完整仓库存放位置
+$skillsDir = Join-Path $agentsDir "skills"                  # 技能根目录
+$skillLink = Join-Path $skillsDir "sap-abap-cli"            # 技能入口（Junction）
+$skillSrc  = Join-Path $repoDir   "skills\sap-abap-cli"     # 仓库内技能子目录
 
-if (-not (Test-Path $skillsDir)) {
-    New-Item -ItemType Directory -Path $skillsDir -Force | Out-Null
-    Write-Ok "已创建目录：$skillsDir"
+# 确保目录存在
+foreach ($dir in @($agentsDir, $skillsDir)) {
+    if (-not (Test-Path $dir)) {
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+        Write-Ok "已创建目录：$dir"
+    }
 }
 
-if (Test-Path $cliDir) {
-    Write-Warn "目录已存在：$cliDir，跳过克隆（如需更新请手动执行 git pull）"
+# 克隆仓库
+if (Test-Path $repoDir) {
+    Write-Warn "仓库已存在：$repoDir"
+    Write-Warn "如需更新请进入该目录手动执行 git pull"
 } else {
     try {
-        git clone https://github.com/shrek-abaper/sap-abap-cli "$cliDir"
-        Write-Ok "克隆完成：$cliDir"
+        git clone https://github.com/shrek-abaper/sap-abap-cli "$repoDir"
+        Write-Ok "克隆完成：$repoDir"
     } catch {
         Write-Fail "克隆失败：$($_.Exception.Message)"
+        exit 1
+    }
+}
+
+# 建立 Junction（目录联接），将技能子目录挂载到技能根目录
+# Junction 无需管理员权限，行为等同于目录快捷方式
+if (Test-Path $skillLink) {
+    Write-Warn "技能链接已存在：$skillLink，跳过"
+} else {
+    try {
+        New-Item -ItemType Junction -Path $skillLink -Target $skillSrc | Out-Null
+        Write-Ok "技能链接创建完成"
+        Write-Ok "  $skillLink"
+        Write-Ok "  -> $skillSrc"
+    } catch {
+        Write-Fail "创建技能链接失败：$($_.Exception.Message)"
         exit 1
     }
 }
@@ -212,7 +245,8 @@ Write-Host "============================================================" -Foreg
 Write-Host "  Node.js      : $nodeVersion"
 Write-Host "  npm          : v$npmVersion"
 Write-Host "  Python       : $(& $pythonCmd --version)"
-Write-Host "  sap-abap-cli : $cliDir"
+Write-Host "  仓库位置     : $repoDir"
+Write-Host "  技能入口     : $skillLink"
 Write-Host ""
 Write-Host "  ─────────────────────────────────────────────────────────" -ForegroundColor Cyan
 Write-Host "  🚀  如何启动 opencode" -ForegroundColor Cyan
@@ -228,6 +262,13 @@ Write-Host "          opencode" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "  步骤 4：进入 opencode 后输入 /connect 连接模型提供商" -ForegroundColor White
 Write-Host "          输入 API Key 后即可正常使用" -ForegroundColor Gray
+Write-Host ""
+Write-Host "  ─────────────────────────────────────────────────────────" -ForegroundColor Cyan
+Write-Host "  🔄  如何更新 sap-abap-cli" -ForegroundColor Cyan
+Write-Host "  ─────────────────────────────────────────────────────────" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "  在以下目录执行 git pull 即可，技能自动生效：" -ForegroundColor White
+Write-Host "  $repoDir" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "  ─────────────────────────────────────────────────────────" -ForegroundColor Cyan
 Write-Host "  📖  sap-abap-cli 使用文档" -ForegroundColor Cyan

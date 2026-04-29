@@ -118,15 +118,15 @@ git clone https://github.com/your-org/sap-abap-cli
 cd sap-abap-cli
 
 # 2. 配置凭据（交互式向导 — 密码不回显）
-python3 scripts/sap_abap_cli.py configure
+python3 skills/sap-abap-cli/scripts/sap_abap_cli.py configure
 
 # 3. 验证连接
-python3 scripts/sap_abap_cli.py status
+python3 skills/sap-abap-cli/scripts/sap_abap_cli.py status
 
 # 4. 开始读取 ABAP 对象
-python3 scripts/sap_abap_cli.py get-program SAPMV45A
-python3 scripts/sap_abap_cli.py get-class ZCL_MY_CLASS
-python3 scripts/sap_abap_cli.py get-function BAPI_SALESORDER_CREATEFROMDAT2 --group BAPI_SD_SALESORDER
+python3 skills/sap-abap-cli/scripts/sap_abap_cli.py get-program SAPMV45A
+python3 skills/sap-abap-cli/scripts/sap_abap_cli.py get-class ZCL_MY_CLASS
+python3 skills/sap-abap-cli/scripts/sap_abap_cli.py get-function BAPI_SALESORDER_CREATEFROMDAT2 --group BAPI_SD_SALESORDER
 ```
 
 ---
@@ -136,7 +136,7 @@ python3 scripts/sap_abap_cli.py get-function BAPI_SALESORDER_CREATEFROMDAT2 --gr
 ### 交互式向导（推荐）
 
 ```bash
-python3 scripts/sap_abap_cli.py configure
+python3 skills/sap-abap-cli/scripts/sap_abap_cli.py configure
 ```
 
 凭据保存至 `~/.sap-abap-cli/config.json`，文件权限为 `0600`。
@@ -161,7 +161,7 @@ export SAP_VERIFY_SSL=0             # 可选：设为 0 以跳过自签名证书
 
 ```bash
 # 通过环境变量传递密码，避免暴露在 Shell 历史记录中
-SAP_PASSWORD="secret" python3 scripts/sap_abap_cli.py configure \
+SAP_PASSWORD="secret" python3 skills/sap-abap-cli/scripts/sap_abap_cli.py configure \
   --url      "https://my-sap.example.com:8000" \
   --username "MYUSER" \
   --client   "100"
@@ -196,7 +196,7 @@ SAP_PASSWORD="secret" python3 scripts/sap_abap_cli.py configure \
 ## 示例
 
 ```bash
-CLI="scripts/sap_abap_cli.py"
+CLI="skills/sap-abap-cli/scripts/sap_abap_cli.py"
 
 # 源代码
 python3 $CLI get-program SAPMV45A

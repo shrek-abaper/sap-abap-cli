@@ -124,15 +124,15 @@ git clone https://github.com/your-org/sap-abap-cli
 cd sap-abap-cli
 
 # 2. Configure credentials (interactive wizard — password is not echoed)
-python3 scripts/sap_abap_cli.py configure
+python3 skills/sap-abap-cli/scripts/sap_abap_cli.py configure
 
 # 3. Verify the connection
-python3 scripts/sap_abap_cli.py status
+python3 skills/sap-abap-cli/scripts/sap_abap_cli.py status
 
 # 4. Start reading ABAP objects
-python3 scripts/sap_abap_cli.py get-program SAPMV45A
-python3 scripts/sap_abap_cli.py get-class ZCL_MY_CLASS
-python3 scripts/sap_abap_cli.py get-function BAPI_SALESORDER_CREATEFROMDAT2 --group BAPI_SD_SALESORDER
+python3 skills/sap-abap-cli/scripts/sap_abap_cli.py get-program SAPMV45A
+python3 skills/sap-abap-cli/scripts/sap_abap_cli.py get-class ZCL_MY_CLASS
+python3 skills/sap-abap-cli/scripts/sap_abap_cli.py get-function BAPI_SALESORDER_CREATEFROMDAT2 --group BAPI_SD_SALESORDER
 ```
 
 ---
@@ -142,7 +142,7 @@ python3 scripts/sap_abap_cli.py get-function BAPI_SALESORDER_CREATEFROMDAT2 --gr
 ### Interactive wizard (recommended)
 
 ```bash
-python3 scripts/sap_abap_cli.py configure
+python3 skills/sap-abap-cli/scripts/sap_abap_cli.py configure
 ```
 
 Credentials are saved to `~/.sap-abap-cli/config.json` with `0600` permissions.
@@ -168,7 +168,7 @@ export SAP_VERIFY_SSL=0             # optional: set 0 for self-signed certificat
 
 ```bash
 # Pass password via environment variable to avoid shell history exposure
-SAP_PASSWORD="secret" python3 scripts/sap_abap_cli.py configure \
+SAP_PASSWORD="secret" python3 skills/sap-abap-cli/scripts/sap_abap_cli.py configure \
   --url      "https://my-sap.example.com:8000" \
   --username "MYUSER" \
   --client   "100"
@@ -203,7 +203,7 @@ Run any command with `--help` for full details.
 ## Examples
 
 ```bash
-CLI="scripts/sap_abap_cli.py"
+CLI="skills/sap-abap-cli/scripts/sap_abap_cli.py"
 
 # Source code
 python3 $CLI get-program SAPMV45A
