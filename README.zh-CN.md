@@ -100,9 +100,9 @@ opencode 仅作为示例。`sap-adt-cli` 实现了标准 Agent Skill 接口（`S
 | 智能体 | 说明 |
 |--------|------|
 | [opencode](https://opencode.ai) | 免费开源，本文示例，支持 30+ 模型提供商 |
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Anthropic 官方 CLI 智能体 |
-| [Cursor](https://cursor.sh) | AI 代码编辑器，支持 MCP 工具扩展 |
-| 其他 MCP 兼容智能体 | 将 `SKILL.md` 放入技能目录即可接入 |
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Anthropic 官方 CLI 智能体，原生支持 SKILL.md |
+| [Cursor](https://cursor.sh) | AI 代码编辑器，可通过 MCP 工具适配器集成 |
+| 其他智能体 | SKILL.md 为 opencode 和 Claude Code 的原生格式；其他框架可能需要适配 |
 
 > ⚠️ **数据合规提示：** ABAP 源代码可能包含企业核心业务逻辑和敏感数据。  
 > 将代码发送至公网 AI 服务前，请确认符合企业数据安全政策。  
@@ -272,18 +272,21 @@ python3 $CLI release-transport DEVK900001                           # 需 allow_
 
 ### 1. 激活 ADT 服务
 
-在事务码 `SICF` 中，激活以下路径的服务树：
+在事务码 `SICF` 中，激活以下服务路径：
 
-```
-/sap/bc/adt
-```
+| 服务路径 | 适用命令 |
+|---|---|
+| `/sap/bc/adt` | 所有命令 |
+| `/sap/bc/adt/datapreview` | `run-sql`（Open SQL 数据预览） |
 
 ### 2. 分配用户权限
 
-为 SAP 用户分配角色 `SAP_ADT_BASE`，或手动授予：
-
-- `S_ADT_RES` — ADT 资源访问权限
-- `S_RFC` — ADT 函数组的远程函数调用权限
+| 操作类型 | 所需权限 |
+|---|---|
+| 所有只读命令 | 角色 `SAP_ADT_BASE`——或手动授予：`S_ADT_RES`（ADT 资源访问）+ `S_RFC`（ADT 函数组） |
+| `write-source`、`activate` | `S_DEVELOP`（`ACTVT=02`，对应对象类型） |
+| `create-transport`、`release-transport` | `S_CTS_ADMI` 或等效传输权限 |
+| `list-transports` | `SAP_ADT_BASE` 已覆盖，无需额外权限 |
 
 ---
 
@@ -294,6 +297,7 @@ python3 $CLI release-transport DEVK900001                           # 需 allow_
 | 源代码类命令（`get-program`、`get-class`、`get-function`、`get-include`、`get-interface`、`get-cds-view`、`get-type-group`） | ABAP 源代码纯文本 |
 | `get-table`、`get-structure`、`get-type-info`、`get-transaction`、`search-object` | ADT 原始 XML |
 | `get-package`、`where-used`、`list-transports`、`run-sql` | JSON 数组 |
+| `syntax-check` | 纯文本消息（以 `[ERROR]`、`[WARNING]`、`[INFO]` 为前缀）；语法无误时输出 `"Syntax OK"` |
 | `status` | 纯文本键值对 |
 
 所有输出写入 **stdout**。错误写入 **stderr**，并返回非零退出码。
@@ -350,6 +354,8 @@ python3 $CLI release-transport DEVK900001                           # 需 allow_
 3. **人工审查** — 人的职责仅限于决定构建什么、审查最终输出，以及在结果不符合预期时迭代规格。
 
 这套工作流的本质：自然语言意图经由 Claude Desktop 提炼为可执行的规格文件，规格文件再由智能体栈端到端消费——从想法到可运行代码，全程无需手工介入。
+
+> 作者是拥有十余年项目从业经验的 SAP 业务顾问，非专职软件开发者。这个项目本身即是证明：深厚的领域知识，结合 AI 原生开发工具链，足以设计并交付生产级的技术工具——无需传统编程背景。
 
 ---
 

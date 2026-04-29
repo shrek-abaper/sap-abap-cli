@@ -107,9 +107,9 @@ and integrates with any agent framework that supports custom tools or skills:
 | Agent | Notes |
 |-------|-------|
 | [opencode](https://opencode.ai) | Free, open-source. Used in this example. Supports 30+ model providers. |
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Anthropic's official CLI agent |
-| [Cursor](https://cursor.sh) | AI-powered code editor with MCP tool support |
-| Any MCP-compatible agent | Drop `SKILL.md` into the skills directory |
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Anthropic's official CLI agent — natively supports SKILL.md |
+| [Cursor](https://cursor.sh) | AI-powered code editor; install via MCP tool adapter |
+| Other agents | SKILL.md is natively supported by opencode and Claude Code; other frameworks may require adaptation |
 
 > ⚠️ **Data compliance note:** ABAP source code may contain core business logic and sensitive data.  
 > Before sending code to cloud-based AI services, confirm compliance with your organization's  
@@ -284,16 +284,21 @@ python3 $CLI release-transport DEVK900001                           # allow_tran
 
 ### 1. Activate ADT services
 
-In transaction `SICF`, activate the service tree at:
-```
-/sap/bc/adt
-```
+In transaction `SICF`, activate the following service paths:
+
+| Service path | Required for |
+|---|---|
+| `/sap/bc/adt` | All commands |
+| `/sap/bc/adt/datapreview` | `run-sql` (Open SQL Data Preview) |
 
 ### 2. Assign user authorization
 
-Assign the role `SAP_ADT_BASE` to the SAP user, or manually grant:
-- `S_ADT_RES` — ADT resource access
-- `S_RFC` — Remote function call access for ADT function groups
+| Operations | Required authorization |
+|---|---|
+| All read commands | Role `SAP_ADT_BASE` — or manually: `S_ADT_RES` (ADT resource access) + `S_RFC` (ADT function groups) |
+| `write-source`, `activate` | `S_DEVELOP` with `ACTVT=02` on the relevant object types |
+| `create-transport`, `release-transport` | `S_CTS_ADMI` or equivalent transport authorization |
+| `list-transports` | Covered by `SAP_ADT_BASE` — no additional authorization needed |
 
 ---
 
@@ -304,6 +309,7 @@ Assign the role `SAP_ADT_BASE` to the SAP user, or manually grant:
 | Source code commands (`get-program`, `get-class`, `get-function`, `get-include`, `get-interface`, `get-cds-view`, `get-type-group`) | Plain text ABAP source |
 | `get-table`, `get-structure`, `get-type-info`, `get-transaction`, `search-object` | Raw ADT XML |
 | `get-package`, `where-used`, `list-transports`, `run-sql` | JSON array |
+| `syntax-check` | Plain text messages (`[ERROR]`, `[WARNING]`, `[INFO]` prefixed); `"Syntax OK"` if clean |
 | `status` | Plain text key-value pairs |
 
 All output is written to **stdout**. Errors are written to **stderr** with a non-zero exit code.
@@ -360,6 +366,8 @@ This project was built using an AI-native, spec-driven development loop:
 3. **Review** — The human role was limited to deciding *what* to build, reviewing final outputs, and iterating on the spec when something fell short.
 
 The result is a workflow where natural-language intent flows from Claude Desktop into precise executable specifications, and those specifications are consumed end-to-end by an agent stack — closing the loop from idea to working code with minimal manual intervention.
+
+> The author is a SAP business consultant with 10+ years of industry experience — not a professional software developer. This project is a direct demonstration that domain expertise, paired with an AI-native toolchain, is sufficient to design and ship production-quality developer tools without a traditional programming background.
 
 ---
 
