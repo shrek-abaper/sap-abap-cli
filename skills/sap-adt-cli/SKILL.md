@@ -78,7 +78,11 @@ SAP credentials not configured.
 ...
 ```
 
-**Ask the user for credentials** using the `question` tool — one question per field:
+**Collect all credentials in a SINGLE `question` tool call** — pass all fields as one array.
+Do NOT ask one field at a time; multiple sequential calls create separate UI tabs that can
+cause earlier answers to be overwritten before all values are saved.
+
+Fields to ask (all at once):
 
 ```
 1. SAP System URL   — e.g. https://my-sap.example.com:8000  (include port)
@@ -88,7 +92,7 @@ SAP credentials not configured.
 5. Skip SSL check?  — yes/no  (yes = self-signed / internal systems, no = production with valid cert)
 ```
 
-**After collecting all answers, save with a single non-interactive command:**
+**After receiving all answers from the single question call, save with one configure command:**
 
 ```bash
 python3 "$SAP_CLI" configure \
