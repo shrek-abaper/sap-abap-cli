@@ -19,6 +19,101 @@ Dependencies (`click`, `requests`, `urllib3`) are installed automatically on fir
 
 ---
 
+## Windows Quick Setup — AI Agent Integration
+
+> **Example: [opencode](https://opencode.ai)** — a free, open-source AI agent — is used here as the reference setup.  
+> `sap-abap-cli` is packaged as a standard Agent Skill (`SKILL.md`) and works with any agent framework that supports custom tools/skills.
+
+`setup-opencode-abap-cli.bat` is a Windows one-click installer that wires up opencode and this skill end-to-end.
+
+### What the script does
+
+| Step | Action |
+|------|--------|
+| 1 | Checks Node.js ≥ v18, Python 3, and Git are installed (prints guided download links if any are missing) |
+| 2 | Adds Node.js bin and npm global package paths to the user-level `PATH` |
+| 3 | Installs `opencode-ai` globally via `npm install -g opencode-ai` |
+| 4 | Clones this repository to `%USERPROFILE%\.agents\skills\sap-abap-cli` (the opencode skills directory) |
+| 5 | Installs Python dependencies: `click`, `requests`, `urllib3` |
+
+### Prerequisites
+
+Install these before running the script:
+
+- **[Node.js v18 LTS or later](https://nodejs.org)** — use default installer options (PATH is checked by default)
+- **[Python 3.8+](https://www.python.org/downloads)** — check **"Add Python to PATH"** during setup
+- **[Git for Windows](https://git-scm.com/download/win)** — use default installer options
+
+### Run the installer
+
+Download [`setup-opencode-abap-cli.bat`](./setup-opencode-abap-cli.bat) and **double-click** it.  
+The script prints colored status messages and will stop with instructions if any prerequisite is missing.
+
+### Start analyzing SAP code with opencode
+
+After the script completes:
+
+```cmd
+REM Open CMD: press Win+R, type cmd, press Enter
+opencode
+```
+
+Inside opencode, connect to your preferred AI model provider:
+
+```
+/connect
+```
+
+Then start querying your SAP system directly in natural language:
+
+```
+Analyze class ZCL_PAYMENT_PROCESSOR for security vulnerabilities
+```
+
+```
+Read program ZREPORT_UPLOAD and check for SQL injection risks,
+missing authorization checks, and hardcoded credentials
+```
+
+```
+Scan the package ZMYPAYMENT and list all objects with potential security issues
+```
+
+opencode automatically calls `sap-abap-cli` to fetch ABAP source code from your SAP system via ADT,
+then passes it to the AI model for analysis — no copy-paste required.
+
+### SAP credentials setup (first run)
+
+On the first query, opencode will prompt you for SAP connection details:
+
+```
+SAP System URL    — e.g. https://my-sap.example.com:8000
+SAP Username      — dialog user (e.g. DEVELOPER)
+SAP Password      — SAP logon password
+SAP Client        — 3-digit client number (e.g. 100)
+Skip SSL check?   — yes for self-signed / internal certs
+```
+
+Credentials are saved to `~\.sap-abap-cli\config.json` and reused in all subsequent sessions.
+
+### Compatible AI agents
+
+opencode is one example. `sap-abap-cli` implements the standard Agent Skill interface (`SKILL.md`)
+and integrates with any agent framework that supports custom tools or skills:
+
+| Agent | Notes |
+|-------|-------|
+| [opencode](https://opencode.ai) | Free, open-source. Used in this example. Supports 30+ model providers. |
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Anthropic's official CLI agent |
+| [Cursor](https://cursor.sh) | AI-powered code editor with MCP tool support |
+| Any MCP-compatible agent | Drop `SKILL.md` into the skills directory |
+
+> ⚠️ **Data compliance note:** ABAP source code may contain core business logic and sensitive data.  
+> Before sending code to cloud-based AI services, confirm compliance with your organization's  
+> data security policy. For sensitive environments, consider an internally-hosted model.
+
+---
+
 ## Quickstart
 
 ```bash
