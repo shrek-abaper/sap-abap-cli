@@ -300,25 +300,42 @@ def _parse_sql_result(xml_text: str) -> list:
         return []
 
     columns_ordered = []
+
     for elem in root.iter():
-        if _tag_local(elem) != "column":
+        if _tag_local(elem) != "columns":
             continue
-        flat = _flat_attribs(elem)
-        col_name = flat.get("name", "")
+        meta = next((c for c in elem if _tag_local(c) == "metadata"), None)
+        if meta is None:
+            continue
+        col_name = _flat_attribs(meta).get("name", "")
         if not col_name:
             continue
-        rows = []
-        for child in elem:
-            cl = _tag_local(child)
-            if cl in ("row", "cell", "value"):
-                rows.append(child.text or "")
-        if not rows:
-            for rows_elem in elem.iter():
-                if _tag_local(rows_elem) == "rows":
-                    for row_elem in rows_elem:
-                        rows.append(row_elem.text or "")
-                    break
-        columns_ordered.append((col_name, rows))
+        dataset = next((c for c in elem if _tag_local(c) == "dataSet"), None)
+        values = []
+        if dataset is not None:
+            values = [d.text or "" for d in dataset if _tag_local(d) == "data"]
+        columns_ordered.append((col_name, values))
+
+    if not columns_ordered:
+        for elem in root.iter():
+            if _tag_local(elem) != "column":
+                continue
+            flat = _flat_attribs(elem)
+            col_name = flat.get("name", "")
+            if not col_name:
+                continue
+            rows = []
+            for child in elem:
+                cl = _tag_local(child)
+                if cl in ("row", "cell", "value"):
+                    rows.append(child.text or "")
+            if not rows:
+                for rows_elem in elem.iter():
+                    if _tag_local(rows_elem) == "rows":
+                        for row_elem in rows_elem:
+                            rows.append(row_elem.text or "")
+                        break
+            columns_ordered.append((col_name, rows))
 
     if not columns_ordered:
         return []
@@ -448,12 +465,28 @@ def where_used(
 
 
 def run_sql(sql: str, max_rows: int = 100) -> AdtResult:
+    url = f"{_base()}/sap/bc/adt/datapreview/freestyle"
     try:
-        resp = make_adt_request(
-            f"{_base()}/sap/bc/adt/datapreview/freestyle",
-            params={"rowNumber": max_rows, "sqlCommand": sql},
-            extra_headers={"Accept": "application/xml"},
-        )
+        try:
+            resp = make_adt_request(
+                url,
+                params={"rowNumber": max_rows, "sqlCommand": sql},
+                extra_headers={"Accept": "application/vnd.sap.adt.datapreview.table.v1+xml"},
+            )
+        except requests.HTTPError as e:
+            if e.response is None or e.response.status_code != 405:
+                raise
+            resp = make_adt_request(
+                url,
+                method="POST",
+                params={"rowNumber": max_rows},
+                data=sql.encode("utf-8"),
+                extra_headers={
+                    "Content-Type": "text/plain",
+                    "Accept": "application/vnd.sap.adt.datapreview.table.v1+xml",
+                },
+                timeout=60,
+            )
         rows = _parse_sql_result(resp.text)
         return AdtResult(text=json.dumps(rows, indent=2))
     except Exception as e:
