@@ -361,13 +361,13 @@ All output is written to **stdout**. Errors are written to **stderr** with a non
 
 This project was built using an AI-native, spec-driven development loop:
 
-1. **Specification** — Requirements and implementation details were worked out through a conversation with **Claude Desktop**, which produced structured Markdown prompt files encoding the full spec (change scope, acceptance criteria, anti-patterns).
-2. **Execution** — The prompt files were handed directly to an agentic coding stack — **[opencode](https://opencode.ai) + [Oh My OpenAgent](https://github.com/oh-my-opencode/oh-my-openagent) + GitHub Copilot Pro** — which planned, implemented, tested, and verified the changes autonomously.
+1. **Specification** — Requirements and implementation details were worked out through conversations with **Claude Sonnet 4.6**, which produced structured Markdown prompt files encoding the full spec (change scope, acceptance criteria, anti-patterns).
+2. **Execution** — The prompt files were handed directly to an agentic coding stack — **[opencode](https://opencode.ai) + [Oh My OpenAgent](https://github.com/oh-my-opencode/oh-my-openagent)** running on a **GitHub Copilot Pro subscription** as the model backend — which planned, implemented, tested, and verified the changes autonomously.
 3. **Review** — The human role was limited to deciding *what* to build, reviewing final outputs, and iterating on the spec when something fell short.
 
-The result is a workflow where natural-language intent flows from Claude Desktop into precise executable specifications, and those specifications are consumed end-to-end by an agent stack — closing the loop from idea to working code with minimal manual intervention.
+The result is a workflow where natural-language intent is refined with **Claude Sonnet 4.6** into precise executable specifications, which are then consumed end-to-end by an agent stack powered by a GitHub Copilot Pro subscription — closing the loop from idea to working code with minimal manual intervention.
 
-> The author is a SAP business consultant with 10+ years of industry experience. This project grew from a practical day-to-day need and became a personal exploration of what an AI-native development workflow makes possible — hopefully useful to other domain experts who want to build their own tools.
+> The author is a SAP consultant with over ten years of project experience and no software development background. This project grew from a practical daily need and became a personal experiment in how an AI-native workflow can reshape what domain experts are able to build — shared here in the hope it's useful to others on a similar path.
 
 ---
 

@@ -29,6 +29,9 @@ env/
 *~
 Thumbs.db
 
+# opencode auto-generated — do not commit
+AGENTS.md
+
 # Test & coverage artifacts
 .pytest_cache/
 .coverage
