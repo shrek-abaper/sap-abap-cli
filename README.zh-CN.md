@@ -331,6 +331,12 @@ python3 $CLI release-transport DEVK900001                           # 需 allow_
 
 ## 版本历史
 
+### v1.1.1 — `run-sql` 兼容性与解析修复
+
+- **GET → POST 降级重试**：`run-sql` 现在优先使用 `GET` 请求；若服务器返回 HTTP 405（Method Not Allowed），自动改用 `POST`，将 SQL 放入请求体重试——提升对 S/4HANA 系统（Data Preview 端点要求 `POST`）的兼容性
+- **正确的 XML 解析**：`_parse_sql_result` 现在按照 ADT 标准列结构（`<columns>/<metadata name="...">/<dataSet>/<data>`）解析查询结果，不再依赖子元素名称猜测；旧的启发式逻辑作为兜底保留，兼容较旧的 SAP 版本
+- **精确的 `Accept` 请求头**：请求时协商 `application/vnd.sap.adt.datapreview.table.v1+xml`，提升响应内容处理的可靠性
+
 ### v1.1.0 — 能力扩展与重命名
 
 - **新增 10 个命令**：`syntax-check`、`get-cds-view`、`get-type-group`、`write-source`、`activate`、`where-used`、`run-sql`、`list-transports`、`create-transport`、`release-transport`
