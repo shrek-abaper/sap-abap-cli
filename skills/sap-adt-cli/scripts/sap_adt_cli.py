@@ -32,7 +32,7 @@ import click
 from lib.config import run_configure_wizard, save_config_from_flags, load_config, CONFIG_FILE, SapConfig
 from lib import handlers
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 
 def _output(result) -> None:
